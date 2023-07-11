@@ -7,27 +7,24 @@ default_type='torch.cuda.FloatTensor'
 default_type='torch.FloatTensor'
 
 
-
-    
-
 class variable_size_graph():
 
     def __init__(self, task_parameters): 
 
         # parameters
-        vocab_size = task_parameters['Voc']
-        nb_of_clust = task_parameters['nb_clusters_target']
-        clust_size_min = task_parameters['size_min']
-        clust_size_max = task_parameters['size_max']
-        p = task_parameters['p']
-        q = task_parameters['q']
+        vocab_size = task_parameters['Voc'] # for TEST_type=1 -> 3 
+        nb_of_clust = task_parameters['nb_clusters_target'] # for TEST_type=1 -> 2
+        clust_size_min = task_parameters['size_min'] # for TEST_type=1 -> 15
+        clust_size_max = task_parameters['size_max'] # for TEST_type=1 -> 25
+        p = task_parameters['p'] # for TEST_type=1 -> 0.5
+        q = task_parameters['q'] # for TEST_type=1 -> 0.1
         self_loop = True
-        W0 = task_parameters['W0']
-        u0 = task_parameters['u0']
+        W0 = task_parameters['W0'] # for TEST_type=1 -> random_graph # that is the adj matrix of target 
+        u0 = task_parameters['u0'] # for TEST_type=1 -> random_signal thats needs to be found # the nodes value target
 
         # create block model graph and put random signal on it
-        W,c=block.unbalanced_block_model(nb_of_clust,clust_size_min,clust_size_max,p,q)
-        u=np.random.randint(vocab_size,size=W.shape[0])
+        W,c=block.unbalanced_block_model(nb_of_clust,clust_size_min,clust_size_max,p,q) # why is this new random?
+        u=np.random.randint(vocab_size,size=W.shape[0]) # why is this new random?
     
         # add the subgraph to be detected
         W,c=block.add_a_block(W0,W,c,nb_of_clust,q)
@@ -45,7 +42,7 @@ class variable_size_graph():
                 W[i,i]=1
 
         # create the target
-        target= (c==nb_of_clust).astype(float)
+        target= (c==nb_of_clust).astype(float) # target is always the highest category
         target=torch.from_numpy(target)
         target=target.long()
 
